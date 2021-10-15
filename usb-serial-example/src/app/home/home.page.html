@@ -1,0 +1,40 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Usb Serial Example
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- <ion-button (click)="loadUsbDevices()">
+    Usb Devices List
+  </ion-button> -->
+
+  <div id="container" *ngIf="!devices || devices.length < 1">
+    <strong>{{ "no USB devices found" }}</strong>
+  </div>
+
+  <ion-list *ngIf="devices && devices.length > 0 && !usbserialResponse">
+    <ion-list-header>
+      <ion-label>
+        {{ 'Connected Devices List' }}
+      </ion-label>
+    </ion-list-header>
+    <ion-item button *ngFor="let item of devices" detail>
+      <ion-label (click)="onDeviceSelected(item)">
+        {{ item.device.productName }}
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <div id="container" *ngIf="usbserialResponse">
+    <strong>{{ usbserialResponse.success }}</strong>
+    <p>{{ usbserialResponse.success ? usbserialResponse.data : usbserialResponse.error }}</p>
+    <p *ngIf="readData" [innerHtml]="readData" style="white-space: pre-wrap;"></p>
+    <p *ngIf="!readData" [innerHtml]="readError"></p>
+    <ion-button *ngIf="!usbserialResponse.success || readError" (click)="retry()">
+      {{ 'Retry' }}
+    </ion-button>
+  </div>
+</ion-content>

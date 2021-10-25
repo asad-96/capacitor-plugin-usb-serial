@@ -13,7 +13,6 @@ npx cap sync
 
 <docgen-index>
 
-* [`echo(...)`](#echo)
 * [`openSerial(...)`](#openserial)
 * [`connectedDevices()`](#connecteddevices)
 * [`registerReadCall(...)`](#registerreadcall)
@@ -23,21 +22,6 @@ npx cap sync
 
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
-
-### echo(...)
-
-```typescript
-echo(options: { value: string; }) => any
-```
-
-| Param         | Type                            |
-| ------------- | ------------------------------- |
-| **`options`** | <code>{ value: string; }</code> |
-
-**Returns:** <code>any</code>
-
---------------------
-
 
 ### openSerial(...)
 
@@ -85,12 +69,17 @@ registerReadCall(callback: MyPluginCallback) => any
 
 #### UsbSerialOptions
 
-| Prop           | Type                |
-| -------------- | ------------------- |
-| **`deviceId`** | <code>number</code> |
-| **`portNum`**  | <code>number</code> |
-| **`baudRate`** | <code>number</code> |
-| **`dataBits`** | <code>number</code> |
+| Prop               | Type                 |
+| ------------------ | -------------------- |
+| **`deviceId`**     | <code>number</code>  |
+| **`portNum`**      | <code>number</code>  |
+| **`baudRate`**     | <code>number</code>  |
+| **`dataBits`**     | <code>number</code>  |
+| **`stopBits`**     | <code>number</code>  |
+| **`parity`**       | <code>number</code>  |
+| **`dtr`**          | <code>boolean</code> |
+| **`rts`**          | <code>boolean</code> |
+| **`sleepOnPause`** | <code>boolean</code> |
 
 
 #### UsbSerialResponse

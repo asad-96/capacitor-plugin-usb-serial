@@ -15,25 +15,28 @@ import com.getcapacitor.annotation.Permission;
 public class UsbSerialPlugin extends Plugin {
 
     private UsbSerial implementation = new UsbSerial();
-
+/*
     @PluginMethod
-    public void echo(PluginCall call) {
-        String value = call.getString("value");
-
-        JSObject ret = new JSObject();
-        ret.put("value", implementation.echo(value));
-        call.resolve(ret);
-    }
+    public void requestPermission(PluginCall call) {
+        implementation.requestPermission(call);
+    }*/
 
     @PluginMethod
     public void openSerial(PluginCall call) {
-        int deviceId = call.getInt("deviceId");
-        int portNum = call.getInt("portNum");
-        int baudRate = call.getInt("baudRate");
-        int dataBits = call.getInt("dataBits");
-
-        JSObject ret = implementation.open(getActivity(), deviceId, portNum, baudRate, dataBits);
+        JSObject ret = implementation.openSerial(getActivity(), call);
         call.resolve(ret);
+    }
+
+    @Override
+    protected void handleOnResume() {
+        super.handleOnResume();
+        implementation.onResume(getActivity());
+    }
+
+    @Override
+    protected void handleOnPause() {
+        implementation.onPause(getActivity());
+        super.handleOnPause();
     }
 
     @PluginMethod

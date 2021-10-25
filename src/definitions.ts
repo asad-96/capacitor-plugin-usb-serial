@@ -3,17 +3,21 @@ export type CallbackID = string;
 export type MyPluginCallback = (message: UsbSerialResponse | null, err?: any) => void;
 
 export interface UsbSerialPlugin {
-  echo(options: { value: string }): Promise<{ value: string }>;
   openSerial(options: UsbSerialOptions): Promise<UsbSerialResponse>;
   connectedDevices(): Promise<UsbSerialResponse>;
   registerReadCall(callback: MyPluginCallback): Promise<CallbackID>;
 }
 
 export interface UsbSerialOptions {
-  deviceId?: number;
+  deviceId: number;
   portNum: number;
-  baudRate: number;
-  dataBits: number;
+  baudRate?: number;
+  dataBits?: number;
+  stopBits?: number;
+  parity?: number;
+  dtr?: boolean;
+  rts?: boolean;
+  sleepOnPause?: boolean;
 }
 
 export interface UsbSerialResponse {

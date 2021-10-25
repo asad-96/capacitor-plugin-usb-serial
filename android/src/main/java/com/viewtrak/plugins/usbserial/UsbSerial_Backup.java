@@ -50,12 +50,26 @@ public class UsbSerial_Backup implements SerialInputOutputManager.Listener {
                 if(UsbBroadcastReceiver.USB_PERMISSION.equals(intent.getAction())) {
                     usbPermission = intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)
                             ? UsbPermission.Granted : UsbPermission.Denied;
-                    open();
+//                    open();
                 }
             }
         };
         mainLooper = new Handler(Looper.getMainLooper());
     }
+
+    /*
+    public JSObject requestPermission(PluginCall requestCall, Activity activity) {
+
+        manager = (UsbManager) activity.getSystemService(Context.USB_SERVICE);
+        // find all available drivers from attached devices.
+        UsbSerialProber prober = UsbSerialProber.getDefaultProber();
+
+        List<UsbSerialDriver> availableDrivers = prober.findAllDrivers(manager);
+        if (!availableDrivers.isEmpty()) {
+            driver = availableDrivers.get(0);
+            UsbDevice device = driver.getDevice();
+        }
+    }*/
 
     @Override
     public void onNewData(byte[] data) {
@@ -154,13 +168,13 @@ public class UsbSerial_Backup implements SerialInputOutputManager.Listener {
         return obj;
     }
 
-    void onResume(Activity activity) {
+ /*   void onResume(Activity activity) {
         activity.registerReceiver(broadcastReceiver, new IntentFilter(INTENT_ACTION_GRANT_USB));
 
         if(usbPermission == UsbPermission.Unknown || usbPermission == UsbPermission.Granted)
             mainLooper.post(this::connect);
     }
-
+*/
     private void disconnect() {
         connected = false;
         if(usbIoManager != null) {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.hoho.android.usbserial.util;
+package com.viewtrak.plugins.usbserial;
 
 import java.security.InvalidParameterException;
 

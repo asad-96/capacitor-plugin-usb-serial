@@ -31,7 +31,7 @@
   <div id="container" *ngIf="usbserialResponse">
     <strong>{{ usbserialResponse.success }}</strong>
     <p>{{ usbserialResponse.success ? usbserialResponse.data : usbserialResponse.error }}</p>
-    <p *ngIf="readData" [innerHtml]="readData" style="white-space: pre-wrap;"></p>
+    <p *ngIf="readData" [innerHtml]="readData | newLine"></p>
     <p *ngIf="!readData" [innerHtml]="readError"></p>
     <ion-button *ngIf="!usbserialResponse.success || readError" (click)="retry()">
       {{ 'Retry' }}

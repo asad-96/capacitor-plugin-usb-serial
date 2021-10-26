@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
-import { LoadingController, ToastController } from '@ionic/angular';
+import { LoadingController } from '@ionic/angular';
 import { UsbSerial, UsbSerialOptions, UsbSerialResponse } from "usb-serial-plugin";
 import { ToastService } from '../core/toast/toast.service';
 import { Device } from '../shared/modal/Device';

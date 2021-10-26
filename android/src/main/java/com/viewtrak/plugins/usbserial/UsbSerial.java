@@ -31,6 +31,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.lang.Error;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -207,7 +208,7 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
         this.readCall = call;
         call.setKeepAlive(true);
         jsObject.put("success", true);
-        jsObject.put("data", new byte[100]);
+        jsObject.put("data", "registered".getBytes(Charset.defaultCharset()));
         return jsObject;
     }
 
@@ -239,13 +240,19 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
         if (this.readCall != null) {
             JSObject jsObject = new JSObject();
             this.readCall.setKeepAlive(true);
-            SpannableStringBuilder spn = new SpannableStringBuilder();
+      /*      new Handler(new Runnable() {
+                @Override
+                public void run() {
+
+                }
+            }, 30000)*/
+           /* SpannableStringBuilder spn = new SpannableStringBuilder();
 //            spn.append("receive " + data.length + " bytes\n");
             if(data.length > 0)
                 spn.append(HexDump.dumpHexString(data)).append("\n");
             else
-                spn.append("receive ").append(String.valueOf(data.length)).append(" bytes\n");
-            jsObject.put("data", spn);
+                spn.append("receive ").append(String.valueOf(data.length)).append(" bytes\n");*/
+            jsObject.put("data", data);
             jsObject.put("success", true);
             readCall.resolve(jsObject);
         }

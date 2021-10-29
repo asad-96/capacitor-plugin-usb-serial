@@ -1,6 +1,6 @@
 export type CallbackID = string;
 
-export type MyPluginCallback = (message: UsbSerialResponse | null, err?: any) => void;
+export type MyPluginCallback = (data: UsbSerialResponse) => void;
 
 export interface UsbSerialPlugin {
   openSerial(options: UsbSerialOptions): Promise<UsbSerialResponse>;

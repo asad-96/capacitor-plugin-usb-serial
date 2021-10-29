@@ -36,5 +36,8 @@
     <ion-button *ngIf="!usbserialResponse.success || readError" (click)="retry()">
       {{ 'Retry' }}
     </ion-button>
+    <ion-button *ngIf="usbserialResponse.success" (click)="copyToClip()">
+      {{ 'Copy To Clipboard' }}
+    </ion-button>
   </div>
 </ion-content>

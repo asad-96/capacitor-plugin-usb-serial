@@ -55,9 +55,9 @@ connectedDevices() => any
 registerReadCall(callback: MyPluginCallback) => any
 ```
 
-| Param          | Type                                                                                                     |
-| -------------- | -------------------------------------------------------------------------------------------------------- |
-| **`callback`** | <code>(message: <a href="#usbserialresponse">UsbSerialResponse</a> \| null, err?: any) =&gt; void</code> |
+| Param          | Type                                                                               |
+| -------------- | ---------------------------------------------------------------------------------- |
+| **`callback`** | <code>(data: <a href="#usbserialresponse">UsbSerialResponse</a>) =&gt; void</code> |
 
 **Returns:** <code>any</code>
 

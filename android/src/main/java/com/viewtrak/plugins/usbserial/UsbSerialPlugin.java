@@ -15,11 +15,6 @@ import com.getcapacitor.annotation.Permission;
 public class UsbSerialPlugin extends Plugin {
 
     private UsbSerial implementation = new UsbSerial();
-/*
-    @PluginMethod
-    public void requestPermission(PluginCall call) {
-        implementation.requestPermission(call);
-    }*/
 
     @PluginMethod
     public void openSerial(PluginCall call) {

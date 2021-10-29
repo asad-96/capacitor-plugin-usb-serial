@@ -11,13 +11,7 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.SpannableStringBuilder;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-
 import com.getcapacitor.JSObject;
-import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
@@ -30,10 +24,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.lang.Error;
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class UsbSerial implements SerialInputOutputManager.Listener {
@@ -51,12 +43,6 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
     // logging tag
     private final String TAG = UsbSerial.class.getSimpleName();
 
-
-    // Read buffer, and read params
-    private static final int READ_WAIT_MILLIS = 2000;
-    private static final int WRITE_WAIT_MILLIS = 2000;
-    private static final int BUFSIZ = 4096;
-
     private boolean sleepOnPause;
     // I/O manager to handle new incoming serial data
     private SerialInputOutputManager usbIoManager;
@@ -73,7 +59,7 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if(UsbBroadcastReceiver.USB_PERMISSION.equals(intent.getAction())) {
+                if(USB_PERMISSION.equals(intent.getAction())) {
                     usbPermission = intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)
                             ? UsbPermission.Granted : UsbPermission.Denied;
                     if (mActivity != null && openSerialCall != null) {
@@ -141,7 +127,7 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
             UsbDeviceConnection usbConnection = usbManager.openDevice(driver.getDevice());
             if(usbConnection == null && usbPermission == UsbPermission.Unknown && !usbManager.hasPermission(driver.getDevice())) {
                 usbPermission = UsbPermission.Requested;
-                PendingIntent usbPermissionIntent = PendingIntent.getBroadcast(activity, 0, new Intent(UsbBroadcastReceiver.USB_PERMISSION), 0);
+                PendingIntent usbPermissionIntent = PendingIntent.getBroadcast(activity, 0, new Intent(USB_PERMISSION), 0);
                 usbManager.requestPermission(driver.getDevice(), usbPermissionIntent);
             }
             if(usbConnection == null) {
@@ -212,48 +198,19 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
         return jsObject;
     }
 
-    private JSObject read() {
-        JSObject jsObject = new JSObject();
-        if(!connected) {
-            jsObject.put("success", false);
-            jsObject.put("error", new Error("Not Connected", new Throwable("NotConnected")));
-            return jsObject;
-        }
-        try {
-            byte[] buffer = new byte[8192];
-            int len = usbSerialPort.read(buffer, READ_WAIT_MILLIS);
-            byte[] data = Arrays.copyOf(buffer, len);
-            jsObject.put("success", true);
-            jsObject.put("data", data);
-            return jsObject;
-        } catch (IOException e) {
-            // when using read with timeout, USB bulkTransfer returns -1 on timeout _and_ errors
-            // like connection loss, so there is typically no exception thrown here on error
-            jsObject.put("success", false);
-            jsObject.put("error", new Error("connection lost: " + e.getMessage(), new Throwable("ConnectionLost")));
-            disconnect();
-            return jsObject;
-        }
-    }
-
     private void updateReceivedData(byte[] data) {
         if (this.readCall != null) {
             JSObject jsObject = new JSObject();
             this.readCall.setKeepAlive(true);
-      /*      new Handler(new Runnable() {
-                @Override
-                public void run() {
-
-                }
-            }, 30000)*/
-           /* SpannableStringBuilder spn = new SpannableStringBuilder();
-//            spn.append("receive " + data.length + " bytes\n");
-            if(data.length > 0)
-                spn.append(HexDump.dumpHexString(data)).append("\n");
-            else
-                spn.append("receive ").append(String.valueOf(data.length)).append(" bytes\n");*/
-            jsObject.put("data", data);
-            jsObject.put("success", true);
+            try {
+                String str = HexDump.toHexString(data);
+                str.concat("\n");
+                jsObject.put("data", str);
+                jsObject.put("success", true);
+            } catch (Exception exception) {
+                jsObject.put("error", new Error(exception.getMessage(), exception.getCause()));
+                jsObject.put("success", false);
+            }
             readCall.resolve(jsObject);
         }
     }

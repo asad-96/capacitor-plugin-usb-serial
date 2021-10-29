@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
+import { Clipboard } from '@capacitor/clipboard';
 import { LoadingController } from '@ionic/angular';
 import { UsbSerial, UsbSerialOptions, UsbSerialResponse } from "usb-serial-plugin";
 import { ToastService } from '../core/toast/toast.service';
@@ -45,6 +46,13 @@ export class HomePage {
     this.loadUsbDevices();
   }
 
+  async copyToClip() {
+    await Clipboard.write({
+      string: this.readData
+    });
+    this.toastSvc.presentToast("Copied to Clipboard", 1000);
+  }
+
   async onDeviceSelected(item: Device) {
     const loading = await this.loadingController.create({
       message: 'Please wait...',
@@ -55,9 +63,7 @@ export class HomePage {
     this.usbserialResponse = await UsbSerial.openSerial(usbSerialOptions);
     console.log(this.usbserialResponse);
     if (this.usbserialResponse.success) {
-      console.log('ready to register the call');
       UsbSerial.registerReadCall((response: UsbSerialResponse) => {
-        console.log('read call response: ', response);
         this.usbserialResponse = response;
          if (response.success && response.data) {
             this.readData += response.data;

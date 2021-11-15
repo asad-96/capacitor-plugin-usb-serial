@@ -3,8 +3,13 @@ export type CallbackID = string;
 export type MyPluginCallback = (data: UsbSerialResponse) => void;
 
 export interface UsbSerialPlugin {
-  openSerial(options: UsbSerialOptions): Promise<UsbSerialResponse>;
+  usbDeviceAttached(callback: MyPluginCallback): Promise<CallbackID>;
+  usbDeviceDetached(callback: MyPluginCallback): Promise<CallbackID>;
   connectedDevices(): Promise<UsbSerialResponse>;
+  openSerial(options: UsbSerialOptions): Promise<UsbSerialResponse>;
+  closeSerial(): Promise<UsbSerialResponse>;
+  readSerial(): Promise<UsbSerialResponse>;
+  writeSerial(): Promise<UsbSerialResponse>;
   registerReadCall(callback: MyPluginCallback): Promise<CallbackID>;
 }
 

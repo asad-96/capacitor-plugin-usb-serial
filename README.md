@@ -13,8 +13,13 @@ npx cap sync
 
 <docgen-index>
 
-* [`openSerial(...)`](#openserial)
+* [`usbDeviceAttached(...)`](#usbdeviceattached)
+* [`usbDeviceDetached(...)`](#usbdevicedetached)
 * [`connectedDevices()`](#connecteddevices)
+* [`openSerial(...)`](#openserial)
+* [`closeSerial()`](#closeserial)
+* [`readSerial()`](#readserial)
+* [`writeSerial()`](#writeserial)
 * [`registerReadCall(...)`](#registerreadcall)
 * [Interfaces](#interfaces)
 
@@ -22,6 +27,47 @@ npx cap sync
 
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
+
+### usbDeviceAttached(...)
+
+```typescript
+usbDeviceAttached(callback: MyPluginCallback) => any
+```
+
+| Param          | Type                                                                               |
+| -------------- | ---------------------------------------------------------------------------------- |
+| **`callback`** | <code>(data: <a href="#usbserialresponse">UsbSerialResponse</a>) =&gt; void</code> |
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### usbDeviceDetached(...)
+
+```typescript
+usbDeviceDetached(callback: MyPluginCallback) => any
+```
+
+| Param          | Type                                                                               |
+| -------------- | ---------------------------------------------------------------------------------- |
+| **`callback`** | <code>(data: <a href="#usbserialresponse">UsbSerialResponse</a>) =&gt; void</code> |
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### connectedDevices()
+
+```typescript
+connectedDevices() => any
+```
+
+**Returns:** <code>any</code>
+
+--------------------
+
 
 ### openSerial(...)
 
@@ -38,10 +84,32 @@ openSerial(options: UsbSerialOptions) => any
 --------------------
 
 
-### connectedDevices()
+### closeSerial()
 
 ```typescript
-connectedDevices() => any
+closeSerial() => any
+```
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### readSerial()
+
+```typescript
+readSerial() => any
+```
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### writeSerial()
+
+```typescript
+writeSerial() => any
 ```
 
 **Returns:** <code>any</code>
@@ -67,6 +135,15 @@ registerReadCall(callback: MyPluginCallback) => any
 ### Interfaces
 
 
+#### UsbSerialResponse
+
+| Prop          | Type                 |
+| ------------- | -------------------- |
+| **`success`** | <code>boolean</code> |
+| **`error`**   | <code>object</code>  |
+| **`data`**    | <code>any</code>     |
+
+
 #### UsbSerialOptions
 
 | Prop               | Type                 |
@@ -80,14 +157,5 @@ registerReadCall(callback: MyPluginCallback) => any
 | **`dtr`**          | <code>boolean</code> |
 | **`rts`**          | <code>boolean</code> |
 | **`sleepOnPause`** | <code>boolean</code> |
-
-
-#### UsbSerialResponse
-
-| Prop          | Type                 |
-| ------------- | -------------------- |
-| **`success`** | <code>boolean</code> |
-| **`error`**   | <code>object</code>  |
-| **`data`**    | <code>any</code>     |
 
 </docgen-api>

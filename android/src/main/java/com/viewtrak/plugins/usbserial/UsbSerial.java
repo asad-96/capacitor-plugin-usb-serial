@@ -11,6 +11,11 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
+import android.widget.Toast;
+
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PluginCall;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
@@ -26,9 +31,12 @@ import java.io.IOException;
 import java.lang.Error;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class UsbSerial implements SerialInputOutputManager.Listener {
+    // call that will be used to send back usb device attached/detached event
+    private PluginCall usbAttachedDetachedCall;
     // call that will be used to send back data to the capacitor app
     private PluginCall readCall;
     // activity reference from UsbSerialPlugin
@@ -38,6 +46,8 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
 
     // usb permission tag name
     public static final String USB_PERMISSION ="com.viewtrak.plugins.usbserial.USB_PERMISSION";
+    private static final int WRITE_WAIT_MILLIS = 2000;
+    private static final int READ_WAIT_MILLIS = 2000;
 
     private enum UsbPermission { Unknown, Requested, Granted, Denied }
     // logging tag
@@ -59,11 +69,28 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if(USB_PERMISSION.equals(intent.getAction())) {
+                String action = intent.getAction();
+                if(USB_PERMISSION.equals(action)) {
                     usbPermission = intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)
                             ? UsbPermission.Granted : UsbPermission.Denied;
                     if (mActivity != null && openSerialCall != null) {
                         openSerial(mActivity, openSerialCall);
+                    }
+                } else if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
+                    if (usbAttachedDetachedCall != null) {
+                        JSObject jsObject = new JSObject();
+                        usbAttachedDetachedCall.setKeepAlive(true);
+                        jsObject.put("success", true);
+                        jsObject.put("data", "NEW_USB_DEVICE_ATTACHED");
+                        usbAttachedDetachedCall.resolve(jsObject);
+                    }
+                }  else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
+                    if (usbAttachedDetachedCall != null) {
+                        JSObject jsObject = new JSObject();
+                        usbAttachedDetachedCall.setKeepAlive(true);
+                        jsObject.put("success", true);
+                        jsObject.put("data", "USB_DEVICE_DETACHED");
+                        usbAttachedDetachedCall.resolve(jsObject);
                     }
                 }
             }
@@ -157,9 +184,80 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
         return obj;
     }
 
+    public JSObject closeSerial() {
+        JSObject jsObject = new JSObject();
+        try {
+            if (readCall != null)
+                readCall.resolve();
+            // Make sure we don't die if we try to close an non-existing port!
+            if (usbSerialPort != null) {
+                usbSerialPort.close();
+            }
+            usbSerialPort = null;
+            jsObject.put("success", true);
+            jsObject.put("data", "Connection Closed");
+        } catch (IOException exception) {
+            jsObject.put("success", false);
+            jsObject.put("error", new Error(exception.getMessage(), exception.getCause()));
+        }
+        return jsObject;
+    }
+
+    JSObject readSerial() {
+        JSObject jsObject = new JSObject();
+        if(!connected) {
+            jsObject.put("error", "not connected");
+            jsObject.put("success", false);
+            return jsObject;
+        }
+        try {
+            byte[] buffer = new byte[8192];
+            int len = usbSerialPort.read(buffer, READ_WAIT_MILLIS);
+            String str = HexDump.toHexString(Arrays.copyOf(buffer, len));
+            str.concat("\n");
+            jsObject.put("data", str);
+            jsObject.put("success", true);
+        } catch (IOException e) {
+            // when using read with timeout, USB bulkTransfer returns -1 on timeout _and_ errors
+            // like connection loss, so there is typically no exception thrown here on error
+            jsObject.put("success", false);
+            jsObject.put("error", new Error("connection lost: " + e.getMessage(), e.getCause()));
+            disconnect();
+        }
+        return jsObject;
+    }
+
+    JSObject writeSerial(String str) {
+        JSObject jsObject = new JSObject();
+        if(!connected) {
+            jsObject.put("error", "not connected");
+            jsObject.put("success", false);
+            return jsObject;
+        }
+        if(str.length() > 0) {
+            jsObject.put("error", "can't send empty string to device");
+            jsObject.put("success", false);
+            return jsObject;
+        }
+        try {
+            byte[] data = (str + '\n').getBytes();
+            usbSerialPort.write(data, WRITE_WAIT_MILLIS);
+            jsObject.put("data", str);
+            jsObject.put("success", true);
+        } catch (Exception e) {
+            jsObject.put("success", false);
+            jsObject.put("error", new Error("connection lost: " + e.getMessage(), e.getCause()));
+            disconnect();
+        }
+        return jsObject;
+    }
+
+
     void onResume(Activity activity) {
         this.mActivity = activity;
         this.mActivity.registerReceiver(broadcastReceiver, new IntentFilter(USB_PERMISSION));
+        this.mActivity.registerReceiver(broadcastReceiver, new IntentFilter(UsbManager.ACTION_USB_DEVICE_ATTACHED));
+        this.mActivity.registerReceiver(broadcastReceiver, new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED));
         if (sleepOnPause) {
             if (usbPermission == UsbPermission.Unknown || usbPermission == UsbPermission.Granted)
                 mainLooper.post(() -> {
@@ -184,7 +282,8 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
         }
         usbIoManager = null;
         try {
-            usbSerialPort.close();
+            if (usbSerialPort != null)
+                usbSerialPort.close();
         } catch (IOException ignored) {}
         usbSerialPort = null;
     }
@@ -194,7 +293,16 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
         this.readCall = call;
         call.setKeepAlive(true);
         jsObject.put("success", true);
-        jsObject.put("data", "registered".getBytes(Charset.defaultCharset()));
+        jsObject.put("data", "REGISTERED".getBytes(Charset.defaultCharset()));
+        return jsObject;
+    }
+
+    public JSObject usbAttachedDetached(PluginCall call) {
+        JSObject jsObject = new JSObject();
+        usbAttachedDetachedCall = call;
+        call.setKeepAlive(true);
+        jsObject.put("success", true);
+        jsObject.put("data", "REGISTERED");
         return jsObject;
     }
 

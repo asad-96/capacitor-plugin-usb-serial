@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { HomePage } from './home.page';
 
 import { HomePageRoutingModule } from './home-routing.module';
-import { NewLinePipe } from '../shared/pipes';
 import { SharedModule } from '../shared/shared.module';
 
 
@@ -14,8 +13,8 @@ import { SharedModule } from '../shared/shared.module';
     CommonModule,
     FormsModule,
     IonicModule,
-    HomePageRoutingModule,
     SharedModule,
+    HomePageRoutingModule
   ],
   declarations: [HomePage]
 })

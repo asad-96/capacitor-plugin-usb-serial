@@ -13,13 +13,12 @@ npx cap sync
 
 <docgen-index>
 
-* [`usbDeviceAttached(...)`](#usbdeviceattached)
-* [`usbDeviceDetached(...)`](#usbdevicedetached)
+* [`usbAttachedDetached(...)`](#usbattacheddetached)
 * [`connectedDevices()`](#connecteddevices)
 * [`openSerial(...)`](#openserial)
 * [`closeSerial()`](#closeserial)
 * [`readSerial()`](#readserial)
-* [`writeSerial()`](#writeserial)
+* [`writeSerial(...)`](#writeserial)
 * [`registerReadCall(...)`](#registerreadcall)
 * [Interfaces](#interfaces)
 
@@ -28,25 +27,10 @@ npx cap sync
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 
-### usbDeviceAttached(...)
+### usbAttachedDetached(...)
 
 ```typescript
-usbDeviceAttached(callback: MyPluginCallback) => any
-```
-
-| Param          | Type                                                                               |
-| -------------- | ---------------------------------------------------------------------------------- |
-| **`callback`** | <code>(data: <a href="#usbserialresponse">UsbSerialResponse</a>) =&gt; void</code> |
-
-**Returns:** <code>any</code>
-
---------------------
-
-
-### usbDeviceDetached(...)
-
-```typescript
-usbDeviceDetached(callback: MyPluginCallback) => any
+usbAttachedDetached(callback: MyPluginCallback) => any
 ```
 
 | Param          | Type                                                                               |
@@ -106,11 +90,15 @@ readSerial() => any
 --------------------
 
 
-### writeSerial()
+### writeSerial(...)
 
 ```typescript
-writeSerial() => any
+writeSerial(data: string) => any
 ```
+
+| Param      | Type                |
+| ---------- | ------------------- |
+| **`data`** | <code>string</code> |
 
 **Returns:** <code>any</code>
 
@@ -137,11 +125,19 @@ registerReadCall(callback: MyPluginCallback) => any
 
 #### UsbSerialResponse
 
-| Prop          | Type                 |
-| ------------- | -------------------- |
-| **`success`** | <code>boolean</code> |
-| **`error`**   | <code>object</code>  |
-| **`data`**    | <code>any</code>     |
+| Prop          | Type                                                      |
+| ------------- | --------------------------------------------------------- |
+| **`success`** | <code>boolean</code>                                      |
+| **`error`**   | <code><a href="#usbserialerror">UsbSerialError</a></code> |
+| **`data`**    | <code>any</code>                                          |
+
+
+#### UsbSerialError
+
+| Prop          | Type                |
+| ------------- | ------------------- |
+| **`message`** | <code>string</code> |
+| **`cause`**   | <code>string</code> |
 
 
 #### UsbSerialOptions

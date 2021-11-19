@@ -15,6 +15,7 @@ export class HomePage {
   usbserialResponse: UsbSerialResponse;
   readData: string = "";
   readError: object;
+  sendCmnd: string = "";
 
   constructor(
     private loadingController: LoadingController,
@@ -23,6 +24,19 @@ export class HomePage {
   ) {}
 
   ionViewWillEnter() {
+    UsbSerial.usbAttachedDetached((response: UsbSerialResponse) => {
+      if (response.success && response.data) {
+        if (response.data == 'NEW_USB_DEVICE_ATTACHED') {
+          this.toastSvc.presentToast("New Usb device Attached", 1000);
+          this.loadUsbDevices();
+        } else if (response.data == 'USB_DEVICE_DETACHED') {
+          this.toastSvc.presentToast("Usb device detached", 1000);
+          this.loadUsbDevices();
+        } else if (response.data == 'REGISTERED') {
+          this.toastSvc.presentToast("Usb Attach/Detach listener registered", 1000);
+        }
+      }
+    })
     this.loadUsbDevices();
   }
 
@@ -76,4 +90,22 @@ export class HomePage {
       });
     }
   }
+
+  async sendCmnds() {
+    if (this.sendCmnd.length > 0) {
+      const result = await UsbSerial.writeSerial(this.sendCmnd);
+      if (result.success && result.data) {
+        this.toastSvc.presentToast("Write Serial Success: "+ result.data, 1000);
+      } else {
+        this.toastSvc.presentToast("Write Serial Fail: "+ result.error.message, 1000);
+      }
+    } else {
+      this.toastSvc.presentToast("Can't send empty string to device", 1000);
+    }
+  }
+
+  closeSerial() {
+    UsbSerial.closeSerial();
+  }
+
 }

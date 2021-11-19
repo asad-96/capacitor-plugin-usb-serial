@@ -16,9 +16,40 @@ public class UsbSerialPlugin extends Plugin {
 
     private UsbSerial implementation = new UsbSerial();
 
+    @PluginMethod(returnType = PluginMethod.RETURN_CALLBACK)
+    public void usbDeviceAttachedDetached(PluginCall call) {
+        JSObject ret = implementation.usbAttachedDetached(call);
+        call.resolve(ret);
+    }
+
+    @PluginMethod
+    public void connectedDevices(PluginCall call) {
+        JSObject ret = implementation.devices(getActivity());
+        call.resolve(ret);
+    }
+
     @PluginMethod
     public void openSerial(PluginCall call) {
         JSObject ret = implementation.openSerial(getActivity(), call);
+        call.resolve(ret);
+    }
+
+    @PluginMethod
+    public void closeSerial(PluginCall call) {
+        JSObject ret = implementation.closeSerial();
+        call.resolve(ret);
+    }
+
+    @PluginMethod
+    public void readSerial(PluginCall call) {
+        JSObject ret = implementation.readSerial();
+        call.resolve(ret);
+    }
+
+    @PluginMethod
+    public void writeSerial(PluginCall call) {
+        String data = call.hasOption("data") ? call.getString("data") : "";
+        JSObject ret = implementation.writeSerial(data);
         call.resolve(ret);
     }
 
@@ -32,12 +63,6 @@ public class UsbSerialPlugin extends Plugin {
     protected void handleOnPause() {
         implementation.onPause(getActivity());
         super.handleOnPause();
-    }
-
-    @PluginMethod
-    public void connectedDevices(PluginCall call) {
-        JSObject ret = implementation.devices(getActivity());
-        call.resolve(ret);
     }
 
     @PluginMethod(returnType = PluginMethod.RETURN_CALLBACK)

@@ -1,5 +1,5 @@
 {
-  "name": "usb-serial-example",
+  "name": "usb-serial-plugin-example",
   "integrations": {
     "capacitor": {}
   },

@@ -4,12 +4,8 @@ import type { MyPluginCallback, UsbSerialOptions, UsbSerialPlugin, UsbSerialResp
 
 export class UsbSerialWeb extends WebPlugin implements UsbSerialPlugin {
 
-  async usbDeviceAttached(callback: MyPluginCallback): Promise<CallbackID> {
+  async usbAttachedDetached(callback: MyPluginCallback): Promise<CallbackID> {
     return 'Usb device attached call not implemented on web yet!' + callback.name;
-  }
-
-  async usbDeviceDetached(callback: MyPluginCallback): Promise<CallbackID> {
-    return 'Usb device detached call not implemented on web yet!' + callback.name;
   }
 
   async connectedDevices(): Promise<UsbSerialResponse> {
@@ -40,10 +36,10 @@ export class UsbSerialWeb extends WebPlugin implements UsbSerialPlugin {
     };
   }
 
-  async writeSerial(): Promise<UsbSerialResponse> {
+  async writeSerial(data: string): Promise<UsbSerialResponse> {
     return {
       success: false,
-      error: { message: 'Usb serial write not implemented on web yet!', cause: '' }
+      error: { message: 'Usb serial write not implemented on web yet!' + data, cause: '' }
     };
   }
 

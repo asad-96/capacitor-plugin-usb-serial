@@ -36,6 +36,14 @@
     <ion-button *ngIf="!usbserialResponse.success || readError" (click)="retry()">
       {{ 'Retry' }}
     </ion-button>
+
+    <ion-item lines="full" class="ion-margin" *ngIf="usbserialResponse.success">
+      <ion-input type="text" placeholder="type here" [(ngModel)]="sendCmnd" slot="start"></ion-input>
+      <ion-button [disabled]="!sendCmnd" (click)="sendCmnds()" slot="end" class="ion-no-margin">
+        {{ 'Send' }}
+      </ion-button>
+    </ion-item>
+
     <ion-button *ngIf="usbserialResponse.success" (click)="copyToClip()">
       {{ 'Copy To Clipboard' }}
     </ion-button>

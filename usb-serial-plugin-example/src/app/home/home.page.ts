@@ -23,17 +23,19 @@ export class HomePage {
     private toastSvc: ToastService
   ) {}
 
-  ionViewWillEnter() {
+  ionViewDidEnter() {
     UsbSerial.usbAttachedDetached((response: UsbSerialResponse) => {
       if (response.success && response.data) {
-        if (response.data == 'NEW_USB_DEVICE_ATTACHED') {
-          this.toastSvc.presentToast("New Usb device Attached", 1000);
-          this.loadUsbDevices();
-        } else if (response.data == 'USB_DEVICE_DETACHED') {
-          this.toastSvc.presentToast("Usb device detached", 1000);
-          this.loadUsbDevices();
-        } else if (response.data == 'REGISTERED') {
-          this.toastSvc.presentToast("Usb Attach/Detach listener registered", 1000);
+        if (!this.usbserialResponse) {
+          if (response.data == 'NEW_USB_DEVICE_ATTACHED') {
+            this.toastSvc.presentToast("New Usb device Attached", 1000);
+            this.loadUsbDevices();
+          } else if (response.data == 'USB_DEVICE_DETACHED') {
+            this.toastSvc.presentToast("Usb device detached", 1000);
+            this.loadUsbDevices();
+          } else if (response.data == 'REGISTERED') {
+            this.toastSvc.presentToast("Usb Attach/Detach listener registered", 1000);
+          }
         }
       }
     })

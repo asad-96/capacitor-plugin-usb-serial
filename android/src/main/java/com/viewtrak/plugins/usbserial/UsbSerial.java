@@ -206,7 +206,7 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
     JSObject readSerial() {
         JSObject jsObject = new JSObject();
         if(!connected) {
-            jsObject.put("error", "not connected");
+            jsObject.put("error", new Error("not connected", new Throwable("NOT_CONNECTED")));
             jsObject.put("success", false);
             return jsObject;
         }
@@ -230,12 +230,12 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
     JSObject writeSerial(String str) {
         JSObject jsObject = new JSObject();
         if(!connected) {
-            jsObject.put("error", "not connected");
+            jsObject.put("error", new Error("not connected", new Throwable("NOT_CONNECTED")));
             jsObject.put("success", false);
             return jsObject;
         }
         if(str.length() > 0) {
-            jsObject.put("error", "can't send empty string to device");
+            jsObject.put("error", new Error("can't send empty string to device", new Throwable("EMPTY_STRING")));
             jsObject.put("success", false);
             return jsObject;
         }
@@ -244,12 +244,13 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
             usbSerialPort.write(data, WRITE_WAIT_MILLIS);
             jsObject.put("data", str);
             jsObject.put("success", true);
+            return jsObject;
         } catch (Exception e) {
             jsObject.put("success", false);
             jsObject.put("error", new Error("connection lost: " + e.getMessage(), e.getCause()));
             disconnect();
+            return jsObject;
         }
-        return jsObject;
     }
 
 

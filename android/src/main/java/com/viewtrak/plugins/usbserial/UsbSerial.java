@@ -234,13 +234,13 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
             jsObject.put("success", false);
             return jsObject;
         }
-        if(str.length() > 0) {
+        if(str.length() == 0) {
             jsObject.put("error", new Error("can't send empty string to device", new Throwable("EMPTY_STRING")));
             jsObject.put("success", false);
             return jsObject;
         }
         try {
-            byte[] data = (str + '\n').getBytes();
+            byte[] data = (str + "\r\n").getBytes();
             usbSerialPort.write(data, WRITE_WAIT_MILLIS);
             jsObject.put("data", str);
             jsObject.put("success", true);

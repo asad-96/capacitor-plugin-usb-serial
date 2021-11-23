@@ -8,7 +8,7 @@ export interface UsbSerialPlugin {
   openSerial(options: UsbSerialOptions): Promise<UsbSerialResponse>;
   closeSerial(): Promise<UsbSerialResponse>;
   readSerial(): Promise<UsbSerialResponse>;
-  writeSerial(data: string): Promise<UsbSerialResponse>;
+  writeSerial(data: UsbSerialWriteOptions): Promise<UsbSerialResponse>;
   registerReadCall(callback: MyPluginCallback): Promise<CallbackID>;
 }
 
@@ -22,6 +22,10 @@ export interface UsbSerialOptions {
   dtr?: boolean;
   rts?: boolean;
   sleepOnPause?: boolean;
+}
+
+export interface UsbSerialWriteOptions {
+  data: string;
 }
 
 export interface UsbSerialResponse {

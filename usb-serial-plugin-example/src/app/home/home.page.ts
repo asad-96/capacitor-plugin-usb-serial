@@ -95,7 +95,7 @@ export class HomePage {
 
   async sendCmnds() {
     if (this.sendCmnd.length > 0) {
-      const result = await UsbSerial.writeSerial(this.sendCmnd);
+      const result = await UsbSerial.writeSerial({data: this.sendCmnd});
       if (result.success && result.data) {
         this.toastSvc.presentToast("Write Serial Success: "+ result.data, 1000);
       } else {

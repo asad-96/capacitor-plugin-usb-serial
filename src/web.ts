@@ -1,6 +1,6 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { MyPluginCallback, UsbSerialOptions, UsbSerialPlugin, UsbSerialResponse, CallbackID } from './definitions';
+import type { MyPluginCallback, UsbSerialOptions, UsbSerialWriteOptions, UsbSerialPlugin, UsbSerialResponse, CallbackID } from './definitions';
 
 export class UsbSerialWeb extends WebPlugin implements UsbSerialPlugin {
 
@@ -36,7 +36,7 @@ export class UsbSerialWeb extends WebPlugin implements UsbSerialPlugin {
     };
   }
 
-  async writeSerial(data: string): Promise<UsbSerialResponse> {
+  async writeSerial(data: UsbSerialWriteOptions): Promise<UsbSerialResponse> {
     return {
       success: false,
       error: { message: 'Usb serial write not implemented on web yet!' + data, cause: '' }

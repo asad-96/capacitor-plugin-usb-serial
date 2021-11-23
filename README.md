@@ -93,12 +93,12 @@ readSerial() => any
 ### writeSerial(...)
 
 ```typescript
-writeSerial(data: string) => any
+writeSerial(data: UsbSerialWriteOptions) => any
 ```
 
-| Param      | Type                |
-| ---------- | ------------------- |
-| **`data`** | <code>string</code> |
+| Param      | Type                                                                    |
+| ---------- | ----------------------------------------------------------------------- |
+| **`data`** | <code><a href="#usbserialwriteoptions">UsbSerialWriteOptions</a></code> |
 
 **Returns:** <code>any</code>
 
@@ -153,5 +153,12 @@ registerReadCall(callback: MyPluginCallback) => any
 | **`dtr`**          | <code>boolean</code> |
 | **`rts`**          | <code>boolean</code> |
 | **`sleepOnPause`** | <code>boolean</code> |
+
+
+#### UsbSerialWriteOptions
+
+| Prop       | Type                |
+| ---------- | ------------------- |
+| **`data`** | <code>string</code> |
 
 </docgen-api>

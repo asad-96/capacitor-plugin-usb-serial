@@ -30,8 +30,7 @@ public class UsbSerialPlugin extends Plugin {
 
     @PluginMethod
     public void openSerial(PluginCall call) {
-        JSObject ret = implementation.openSerial(getActivity(), call);
-        call.resolve(ret);
+        implementation.openSerial(getActivity(), call);
     }
 
     @PluginMethod
@@ -56,12 +55,12 @@ public class UsbSerialPlugin extends Plugin {
     @Override
     protected void handleOnResume() {
         super.handleOnResume();
-        implementation.onResume(getActivity());
+        implementation.onResume();
     }
 
     @Override
     protected void handleOnPause() {
-        implementation.onPause(getActivity());
+        implementation.onPause();
         super.handleOnPause();
     }
 

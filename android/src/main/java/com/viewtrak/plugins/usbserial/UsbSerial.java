@@ -16,6 +16,8 @@ import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PluginCall;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
@@ -40,7 +42,7 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
     // call that will be used to send back data to the capacitor app
     private PluginCall readCall;
     // activity reference from UsbSerialPlugin
-    private Activity mActivity;
+    private AppCompatActivity mActivity;
     // call that will have data to open connection
     private PluginCall openSerialCall;
 
@@ -75,6 +77,7 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
                             ? UsbPermission.Granted : UsbPermission.Denied;
                     if (mActivity != null && openSerialCall != null) {
                         openSerial(mActivity, openSerialCall);
+                        this.mActivity.unregisterReceiver(this);
                     }
                 } else if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
                     if (usbAttachedDetachedCall != null) {
@@ -113,7 +116,7 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
         });
     }
 
-    public JSObject openSerial(Activity activity, PluginCall openSerialCall) {
+    public void openSerial(AppCompatActivity activity, PluginCall openSerialCall) {
         JSObject obj = new JSObject();
         this.mActivity = activity;
         this.openSerialCall = openSerialCall;
@@ -137,25 +140,30 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
             if (device == null) {
                 obj.put("success", false);
                 obj.put("error", new Error("connection failed: device not found", new Throwable("connectionFailed:DeviceNotFound")));
-                return obj;
+                this.openSerialCall.resolve(obj);
+                return;
             }
             UsbSerialDriver driver = UsbSerialProber.getDefaultProber().probeDevice(device);
             if (driver == null) {
                 obj.put("success", false);
                 obj.put("error", new Error("connection failed: no driver for device", new Throwable("connectionFailed:NoDriverForDevice")));
-                return obj;
+                this.openSerialCall.resolve(obj);
+                return;
             }
             if(driver.getPorts().size() < portNum) {
                 obj.put("success", false);
                 obj.put("error", new Error("connection failed: not enough ports at device", new Throwable("connectionFailed:NoAvailablePorts")));
-                return obj;
+                this.openSerialCall.resolve(obj);
+                return;
             }
             usbSerialPort = driver.getPorts().get(portNum);
             UsbDeviceConnection usbConnection = usbManager.openDevice(driver.getDevice());
             if(usbConnection == null && usbPermission == UsbPermission.Unknown && !usbManager.hasPermission(driver.getDevice())) {
                 usbPermission = UsbPermission.Requested;
-                PendingIntent usbPermissionIntent = PendingIntent.getBroadcast(activity, 0, new Intent(USB_PERMISSION), 0);
+                PendingIntent usbPermissionIntent = PendingIntent.getBroadcast(AppCompatActivity, 0, new Intent(USB_PERMISSION), 0);
+                this.mActivity.registerReceiver(broadcastReceiver, new IntentFilter(USB_PERMISSION));
                 usbManager.requestPermission(driver.getDevice(), usbPermissionIntent);
+                return;
             }
             if(usbConnection == null) {
                 if (!usbManager.hasPermission(driver.getDevice())) {
@@ -165,7 +173,8 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
                     obj.put("success", false);
                     obj.put("error", new Error("connection failed: Serial open failed", new Throwable("connectionFailed:SerialOpenFailed")));
                 }
-                return obj;
+                this.openSerialCall.resolve(obj);
+                return;
             }
             usbSerialPort.open(usbConnection);
             usbSerialPort.setParameters(baudRate, dataBits, stopBits, parity);
@@ -181,7 +190,7 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
             obj.put("error", new Error(exception.getMessage(), exception.getCause()));
             disconnect();
         }
-        return obj;
+        this.openSerialCall.resolve(obj);
     }
 
     public JSObject closeSerial() {
@@ -254,11 +263,7 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
     }
 
 
-    void onResume(Activity activity) {
-        this.mActivity = activity;
-        this.mActivity.registerReceiver(broadcastReceiver, new IntentFilter(USB_PERMISSION));
-        this.mActivity.registerReceiver(broadcastReceiver, new IntentFilter(UsbManager.ACTION_USB_DEVICE_ATTACHED));
-        this.mActivity.registerReceiver(broadcastReceiver, new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED));
+    void onResume() {
         if (sleepOnPause) {
             if (usbPermission == UsbPermission.Unknown || usbPermission == UsbPermission.Granted)
                 mainLooper.post(() -> {
@@ -267,12 +272,10 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
         }
     }
 
-    void onPause(Activity activity) {
-        this.mActivity = activity;
+    void onPause() {
         if(connected && sleepOnPause) {
             disconnect();
         }
-        this.mActivity.unregisterReceiver(broadcastReceiver);
     }
 
     private void disconnect() {
@@ -302,6 +305,8 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
         JSObject jsObject = new JSObject();
         usbAttachedDetachedCall = call;
         call.setKeepAlive(true);
+        this.mActivity.registerReceiver(broadcastReceiver, new IntentFilter(UsbManager.ACTION_USB_DEVICE_ATTACHED));
+        this.mActivity.registerReceiver(broadcastReceiver, new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED));
         jsObject.put("success", true);
         jsObject.put("data", "REGISTERED");
         return jsObject;
@@ -333,7 +338,7 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
         }
     }
 
-    public JSObject devices(Activity activity) {
+    public JSObject devices(AppCompatActivity activity) {
         JSObject jsObject = new JSObject();
         try {
             List<DeviceItem> listItems = new ArrayList();

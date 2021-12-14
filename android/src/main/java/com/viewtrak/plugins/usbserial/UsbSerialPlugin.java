@@ -1,15 +1,10 @@
 package com.viewtrak.plugins.usbserial;
 
-import android.Manifest;
-import android.app.Activity;
-
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
-import com.getcapacitor.PluginResult;
 import com.getcapacitor.annotation.CapacitorPlugin;
-import com.getcapacitor.annotation.Permission;
 
 @CapacitorPlugin(name = "UsbSerial")
 public class UsbSerialPlugin extends Plugin {

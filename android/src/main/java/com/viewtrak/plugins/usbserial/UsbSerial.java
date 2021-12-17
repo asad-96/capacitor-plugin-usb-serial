@@ -72,7 +72,7 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
                             ? UsbPermission.Granted : UsbPermission.Denied;
                     if (mActivity != null && openSerialCall != null) {
                         openSerial(mActivity, openSerialCall);
-                        this.mActivity.unregisterReceiver(this);
+                        mActivity.unregisterReceiver(this);
                     }
                 } else if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
                     if (usbAttachedDetachedCall != null) {
@@ -155,7 +155,7 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
             UsbDeviceConnection usbConnection = usbManager.openDevice(driver.getDevice());
             if(usbConnection == null && usbPermission == UsbPermission.Unknown && !usbManager.hasPermission(driver.getDevice())) {
                 usbPermission = UsbPermission.Requested;
-                PendingIntent usbPermissionIntent = PendingIntent.getBroadcast(AppCompatActivity, 0, new Intent(USB_PERMISSION), 0);
+                PendingIntent usbPermissionIntent = PendingIntent.getBroadcast(this.mActivity, 0, new Intent(USB_PERMISSION), 0);
                 this.mActivity.registerReceiver(broadcastReceiver, new IntentFilter(USB_PERMISSION));
                 usbManager.requestPermission(driver.getDevice(), usbPermissionIntent);
                 return;
@@ -296,7 +296,8 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
         return jsObject;
     }
 
-    public JSObject usbAttachedDetached(PluginCall call) {
+    public JSObject usbAttachedDetached(AppCompatActivity activity, PluginCall call) {
+        this.mActivity = activity;
         JSObject jsObject = new JSObject();
         usbAttachedDetachedCall = call;
         call.setKeepAlive(true);

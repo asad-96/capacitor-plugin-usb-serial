@@ -13,7 +13,7 @@ public class UsbSerialPlugin extends Plugin {
 
     @PluginMethod(returnType = PluginMethod.RETURN_CALLBACK)
     public void usbAttachedDetached(PluginCall call) {
-        JSObject ret = implementation.usbAttachedDetached(call);
+        JSObject ret = implementation.usbAttachedDetached(getActivity(), call);
         call.resolve(ret);
     }
 

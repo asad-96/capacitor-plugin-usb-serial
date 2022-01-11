@@ -1,6 +1,6 @@
 {
   "name": "usb-serial-plugin",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "This plugin can be used for reading data from other device over the usb channel",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",

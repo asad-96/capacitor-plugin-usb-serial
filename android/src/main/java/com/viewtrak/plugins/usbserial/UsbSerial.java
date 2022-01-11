@@ -190,20 +190,14 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
 
     public JSObject closeSerial() {
         JSObject jsObject = new JSObject();
-        try {
-            if (readCall != null)
-                readCall.resolve();
-            // Make sure we don't die if we try to close an non-existing port!
-            if (usbSerialPort != null) {
-                usbSerialPort.close();
-            }
-            usbSerialPort = null;
-            jsObject.put("success", true);
-            jsObject.put("data", "Connection Closed");
-        } catch (IOException exception) {
+        if (readCall != null) {
             jsObject.put("success", false);
-            jsObject.put("error", new Error(exception.getMessage(), exception.getCause()));
+            readCall.resolve();
         }
+        // Make sure we don't die if we try to close an non-existing port!
+        disconnect();
+        jsObject.put("success", true);
+        jsObject.put("data", "Connection Closed");
         return jsObject;
     }
 

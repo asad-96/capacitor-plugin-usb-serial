@@ -43,6 +43,7 @@ export class HomePage {
   }
 
   private async loadUsbDevices() {
+    this.usbserialResponse = undefined;
     const loading = await this.loadingController.create({
       message: 'Loading Devices...',
       duration: 1000
@@ -78,7 +79,9 @@ export class HomePage {
     const usbSerialOptions: UsbSerialOptions = { deviceId: item.device.deviceId, portNum: item.port, baudRate: 38400, dataBits: 8 }
     this.usbserialResponse = await UsbSerial.openSerial(usbSerialOptions);
     console.log(this.usbserialResponse);
+    this.toastSvc.presentToast("device response" + this.usbserialResponse.success);
     if (this.usbserialResponse.success) {
+      this.toastSvc.presentToast("device response" + this.usbserialResponse.data);
       UsbSerial.registerReadCall((response: UsbSerialResponse) => {
         this.usbserialResponse = response;
          if (response.success && response.data) {
@@ -90,6 +93,8 @@ export class HomePage {
          }
          this.changeRef.detectChanges();
       });
+    } else {
+      this.toastSvc.presentToast("device response" + this.usbserialResponse.error);
     }
   }
 
@@ -106,8 +111,9 @@ export class HomePage {
     }
   }
 
-  closeSerial() {
-    UsbSerial.closeSerial();
+  async closeSerial() {
+    await UsbSerial.closeSerial();
+    this.loadUsbDevices();
   }
 
 }

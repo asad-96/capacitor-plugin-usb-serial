@@ -44,6 +44,7 @@ export class HomePage {
 
   private async loadUsbDevices() {
     this.usbserialResponse = undefined;
+    delete this.devices;
     const loading = await this.loadingController.create({
       message: 'Loading Devices...',
       duration: 1000
@@ -75,6 +76,7 @@ export class HomePage {
       message: 'Please wait...',
       duration: 3000
     });
+    this.toastSvc.presentToast('device id:: '+item.device.deviceId, 1000);
     await loading.present();
     const usbSerialOptions: UsbSerialOptions = { deviceId: item.device.deviceId, portNum: item.port, baudRate: 38400, dataBits: 8 }
     this.usbserialResponse = await UsbSerial.openSerial(usbSerialOptions);

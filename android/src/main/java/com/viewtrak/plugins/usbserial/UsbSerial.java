@@ -11,6 +11,8 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.os.Handler;
 import android.os.Looper;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.getcapacitor.JSObject;
@@ -129,9 +131,10 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
 
             UsbDevice device = null;
             UsbManager usbManager = (UsbManager) activity.getSystemService(Context.USB_SERVICE);
-            for(UsbDevice v : usbManager.getDeviceList().values())
-                if(v.getDeviceId() == deviceId)
+            for(UsbDevice v : usbManager.getDeviceList().values()) {
+                if (v.getDeviceId() == deviceId)
                     device = v;
+            }
             if (device == null) {
                 obj.put("success", false);
                 obj.put("error", new Error("connection failed: device not found", new Throwable("connectionFailed:DeviceNotFound")));
@@ -274,6 +277,7 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
             usbIoManager.stop();
         }
         usbIoManager = null;
+        usbPermission = UsbPermission.Unknown;
         try {
             if (usbSerialPort != null)
                 usbSerialPort.close();

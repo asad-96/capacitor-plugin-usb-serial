@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
@@ -158,7 +159,17 @@ public class UsbSerial implements SerialInputOutputManager.Listener {
             UsbDeviceConnection usbConnection = usbManager.openDevice(driver.getDevice());
             if(usbConnection == null && usbPermission == UsbPermission.Unknown && !usbManager.hasPermission(driver.getDevice())) {
                 usbPermission = UsbPermission.Requested;
-                PendingIntent usbPermissionIntent = PendingIntent.getBroadcast(this.mActivity, 0, new Intent(USB_PERMISSION), 0);
+                int flags;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    // Android 12 (S+) e versões mais recentes
+                    flags = PendingIntent.FLAG_IMMUTABLE;
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    // Versões anteriores a Android 12
+                    flags = PendingIntent.FLAG_MUTABLE;
+                } else {
+                    flags = 0;
+                }
+                PendingIntent usbPermissionIntent = PendingIntent.getBroadcast(this.mActivity, 0, new Intent(USB_PERMISSION), flags);
                 this.mActivity.registerReceiver(broadcastReceiver, new IntentFilter(USB_PERMISSION));
                 usbManager.requestPermission(driver.getDevice(), usbPermissionIntent);
                 return;

@@ -1,0 +1,269 @@
+{
+  "api": {
+    "name": "UsbSerialPlugin",
+    "slug": "usbserialplugin",
+    "docs": "",
+    "tags": [],
+    "methods": [
+      {
+        "name": "usbAttachedDetached",
+        "signature": "(callback: MyPluginCallback) => any",
+        "parameters": [
+          {
+            "name": "callback",
+            "docs": "",
+            "type": "(data: UsbSerialResponse) => void"
+          }
+        ],
+        "returns": "any",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "MyPluginCallback",
+          "CallbackID"
+        ],
+        "slug": "usbattacheddetached"
+      },
+      {
+        "name": "connectedDevices",
+        "signature": "() => any",
+        "parameters": [],
+        "returns": "any",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "UsbSerialResponse"
+        ],
+        "slug": "connecteddevices"
+      },
+      {
+        "name": "openSerial",
+        "signature": "(options: UsbSerialOptions) => any",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "UsbSerialOptions"
+          }
+        ],
+        "returns": "any",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "UsbSerialOptions",
+          "UsbSerialResponse"
+        ],
+        "slug": "openserial"
+      },
+      {
+        "name": "closeSerial",
+        "signature": "() => any",
+        "parameters": [],
+        "returns": "any",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "UsbSerialResponse"
+        ],
+        "slug": "closeserial"
+      },
+      {
+        "name": "readSerial",
+        "signature": "() => any",
+        "parameters": [],
+        "returns": "any",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "UsbSerialResponse"
+        ],
+        "slug": "readserial"
+      },
+      {
+        "name": "writeSerial",
+        "signature": "(data: UsbSerialWriteOptions) => any",
+        "parameters": [
+          {
+            "name": "data",
+            "docs": "",
+            "type": "UsbSerialWriteOptions"
+          }
+        ],
+        "returns": "any",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "UsbSerialWriteOptions",
+          "UsbSerialResponse"
+        ],
+        "slug": "writeserial"
+      },
+      {
+        "name": "registerReadCall",
+        "signature": "(callback: MyPluginCallback) => any",
+        "parameters": [
+          {
+            "name": "callback",
+            "docs": "",
+            "type": "(data: UsbSerialResponse) => void"
+          }
+        ],
+        "returns": "any",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "MyPluginCallback",
+          "CallbackID"
+        ],
+        "slug": "registerreadcall"
+      }
+    ],
+    "properties": []
+  },
+  "interfaces": [
+    {
+      "name": "UsbSerialResponse",
+      "slug": "usbserialresponse",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "success",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "boolean"
+        },
+        {
+          "name": "error",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [
+            "UsbSerialError"
+          ],
+          "type": "UsbSerialError | undefined"
+        },
+        {
+          "name": "data",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "any"
+        }
+      ]
+    },
+    {
+      "name": "UsbSerialError",
+      "slug": "usbserialerror",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "message",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "cause",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "UsbSerialOptions",
+      "slug": "usbserialoptions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "deviceId",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "number"
+        },
+        {
+          "name": "portNum",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "number"
+        },
+        {
+          "name": "baudRate",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "number | undefined"
+        },
+        {
+          "name": "dataBits",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "number | undefined"
+        },
+        {
+          "name": "stopBits",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "number | undefined"
+        },
+        {
+          "name": "parity",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "number | undefined"
+        },
+        {
+          "name": "dtr",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "boolean | undefined"
+        },
+        {
+          "name": "rts",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "boolean | undefined"
+        },
+        {
+          "name": "sleepOnPause",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "boolean | undefined"
+        }
+      ]
+    },
+    {
+      "name": "UsbSerialWriteOptions",
+      "slug": "usbserialwriteoptions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "data",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "enums": []
+}
